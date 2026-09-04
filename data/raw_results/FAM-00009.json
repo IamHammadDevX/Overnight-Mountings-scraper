@@ -1,0 +1,48 @@
+{
+  "family_id": "FAM-00009",
+  "source_sku": "10030",
+  "product_url": "https://www.overnightmountings.com/product/men-s-lion-s-head-ring-10030?q=10030",
+  "white": {
+    "images": [
+      "https://overnightmountings.s3.amazonaws.com/10030.jpg",
+      "https://overnightmountings.s3.amazonaws.com/10030.side.jpg"
+    ],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": true,
+      "color_swatch": null
+    }
+  },
+  "yellow_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "rose_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "attempts": [
+    {
+      "family_id": "FAM-00009",
+      "sku": "10030",
+      "url": "https://www.overnightmountings.com/product/men-s-lion-s-head-ring-10030?q=10030",
+      "outcome": "found",
+      "detail": null,
+      "timestamp": "2026-09-04T19:19:37.903447+00:00"
+    }
+  ]
+}

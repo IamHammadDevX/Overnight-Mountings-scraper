@@ -1,0 +1,17 @@
+﻿# Client-provided source workbooks
+/Overnight_Unique_SKUs_For_Scraping.xlsx
+/overnight_products_full_official update.xlsx
+
+# Generated workbook deliverables
+/data/*.xlsx
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Editor and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,48 @@
+{
+  "family_id": "FAM-00002",
+  "source_sku": "10004-10X8",
+  "product_url": "https://www.overnightmountings.com/product/men-s-oval-gemstone-ring-10004-10x8?q=10004-10X8",
+  "white": {
+    "images": [
+      "https://overnightmountings.s3.amazonaws.com/10004.jpg",
+      "https://overnightmountings.s3.amazonaws.com/10004.side.jpg"
+    ],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": true,
+      "color_swatch": null
+    }
+  },
+  "yellow_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "rose_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "attempts": [
+    {
+      "family_id": "FAM-00002",
+      "sku": "10004-10X8",
+      "url": "https://www.overnightmountings.com/product/men-s-oval-gemstone-ring-10004-10x8?q=10004-10X8",
+      "outcome": "found",
+      "detail": null,
+      "timestamp": "2026-09-04T19:19:08.611589+00:00"
+    }
+  ]
+}

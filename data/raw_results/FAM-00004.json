@@ -1,0 +1,48 @@
+{
+  "family_id": "FAM-00004",
+  "source_sku": "10013",
+  "product_url": "https://www.overnightmountings.com/product/men-s-round-gemstone-ring-10013?q=10013",
+  "white": {
+    "images": [
+      "https://overnightmountings.s3.amazonaws.com/10013.jpg",
+      "https://overnightmountings.s3.amazonaws.com/10013.side.jpg"
+    ],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": true,
+      "color_swatch": null
+    }
+  },
+  "yellow_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "rose_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "attempts": [
+    {
+      "family_id": "FAM-00004",
+      "sku": "10013",
+      "url": "https://www.overnightmountings.com/product/men-s-round-gemstone-ring-10013?q=10013",
+      "outcome": "found",
+      "detail": null,
+      "timestamp": "2026-09-04T19:19:15.276154+00:00"
+    }
+  ]
+}

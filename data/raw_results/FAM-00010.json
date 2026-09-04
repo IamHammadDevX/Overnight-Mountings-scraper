@@ -1,0 +1,48 @@
+{
+  "family_id": "FAM-00010",
+  "source_sku": "10034-A",
+  "product_url": "https://www.overnightmountings.com/product/men-s-signet-ring-10034-a?q=10034-A",
+  "white": {
+    "images": [
+      "https://overnightmountings.s3.amazonaws.com/10034.jpg",
+      "https://overnightmountings.s3.amazonaws.com/10034.side.jpg"
+    ],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": true,
+      "color_swatch": null
+    }
+  },
+  "yellow_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "rose_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "attempts": [
+    {
+      "family_id": "FAM-00010",
+      "sku": "10034-A",
+      "url": "https://www.overnightmountings.com/product/men-s-signet-ring-10034-a?q=10034-A",
+      "outcome": "found",
+      "detail": null,
+      "timestamp": "2026-09-04T19:19:41.100406+00:00"
+    }
+  ]
+}

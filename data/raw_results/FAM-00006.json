@@ -1,0 +1,48 @@
+{
+  "family_id": "FAM-00006",
+  "source_sku": "10018",
+  "product_url": "https://www.overnightmountings.com/product/men-s-gemstone-ring-10018?q=10018",
+  "white": {
+    "images": [
+      "https://overnightmountings.s3.amazonaws.com/10018.jpg",
+      "https://overnightmountings.s3.amazonaws.com/10018.side.jpg"
+    ],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": true,
+      "color_swatch": null
+    }
+  },
+  "yellow_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "rose_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "attempts": [
+    {
+      "family_id": "FAM-00006",
+      "sku": "10018",
+      "url": "https://www.overnightmountings.com/product/men-s-gemstone-ring-10018?q=10018",
+      "outcome": "found",
+      "detail": null,
+      "timestamp": "2026-09-04T19:19:26.929444+00:00"
+    }
+  ]
+}

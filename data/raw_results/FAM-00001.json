@@ -1,0 +1,48 @@
+{
+  "family_id": "FAM-00001",
+  "source_sku": "10002-10X8",
+  "product_url": "https://www.overnightmountings.com/product/men-s-oval-cabochon-gemstone-ring-10002-10x8?q=10002-10X8",
+  "white": {
+    "images": [
+      "https://overnightmountings.s3.amazonaws.com/10002.jpg",
+      "https://overnightmountings.s3.us-east-1.amazonaws.com/10002.side.jpg"
+    ],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": true,
+      "color_swatch": null
+    }
+  },
+  "yellow_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "rose_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "attempts": [
+    {
+      "family_id": "FAM-00001",
+      "sku": "10002-10X8",
+      "url": "https://www.overnightmountings.com/product/men-s-oval-cabochon-gemstone-ring-10002-10x8?q=10002-10X8",
+      "outcome": "found",
+      "detail": null,
+      "timestamp": "2026-09-04T19:19:03.947319+00:00"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "family_id": "FAM-00007",
+  "source_sku": "10023",
+  "product_url": "https://www.overnightmountings.com/product/men-s-signet-ring-10023?q=10023",
+  "white": {
+    "images": [
+      "https://overnightmountings.s3.amazonaws.com/10023.jpg",
+      "https://overnightmountings.s3.amazonaws.com/10023.side.jpg"
+    ],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": true,
+      "color_swatch": null
+    }
+  },
+  "yellow_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "rose_gold": {
+    "images": [],
+    "videos": [],
+    "available": true,
+    "evidence": {
+      "source": "structured_scripts",
+      "color_specific": false,
+      "color_swatch": null
+    }
+  },
+  "attempts": [
+    {
+      "family_id": "FAM-00007",
+      "sku": "10023",
+      "url": "https://www.overnightmountings.com/product/men-s-signet-ring-10023?q=10023",
+      "outcome": "found",
+      "detail": null,
+      "timestamp": "2026-09-04T19:19:31.426340+00:00"
+    }
+  ]
+}
