@@ -2,6 +2,7 @@
 import json
 import re
 from html import unescape
+from typing import Optional
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from .models import ColorMedia
 
@@ -22,7 +23,7 @@ def _raw_media(html: str) -> tuple[list[str], list[str]]:
     if not found: raise ValueError("Product media scripts absent from page")
     return values["product-images"], values["product-videos"]
 
-def page_supports_color(html: str, color: str) -> bool | None:
+def page_supports_color(html: str, color: str) -> Optional[bool]:
     match = _COLORS.search(html)
     if not match: return None
     try: return color in json.loads(match.group("colors"))

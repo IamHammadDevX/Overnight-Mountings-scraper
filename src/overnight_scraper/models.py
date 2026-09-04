@@ -2,10 +2,10 @@
 
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from enum import StrEnum
-from typing import Any
+from enum import Enum
+from typing import Any, Optional
 
-class LookupOutcome(StrEnum):
+class LookupOutcome(str, Enum):
     FOUND = "found"
     NOT_FOUND = "not_found"
     TRANSIENT_ERROR = "transient_error"
@@ -22,16 +22,16 @@ class Family:
 class ColorMedia:
     images: list[str] = field(default_factory=list)
     videos: list[str] = field(default_factory=list)
-    available: bool | None = None
+    available: Optional[bool] = None
     evidence: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class Attempt:
     family_id: str
     sku: str
-    url: str | None
+    url: Optional[str]
     outcome: LookupOutcome
-    detail: str | None = None
+    detail: Optional[str] = None
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 @dataclass

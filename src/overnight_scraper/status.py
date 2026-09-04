@@ -1,11 +1,12 @@
 ﻿from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 
 from .storage import connect, init_db, progress
 
 
-def format_eta(seconds: int | None) -> str:
+def format_eta(seconds: Optional[int]) -> str:
     if seconds is None:
         return "unknown"
     hours, remainder = divmod(seconds, 3600)

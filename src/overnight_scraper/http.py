@@ -1,6 +1,7 @@
 ﻿from __future__ import annotations
 from dataclasses import dataclass
 from time import sleep
+from typing import Optional, Union
 from urllib.parse import urljoin
 import requests
 from .media import parse_color_media, with_color
@@ -13,16 +14,16 @@ TRANSIENT_STATUS = {408, 425, 429, 500, 502, 503, 504}
 class PageResponse:
     outcome: LookupOutcome
     url: str
-    html: str | None = None
-    detail: str | None = None
+    html: Optional[str] = None
+    detail: Optional[str] = None
 
 class OvernightClient:
-    def __init__(self, timeout_seconds: float = 30, retries: int = 3, session: requests.Session | None = None):
+    def __init__(self, timeout_seconds: float = 30, retries: int = 3, session: Optional[requests.Session] = None):
         self.timeout_seconds, self.retries = timeout_seconds, retries
         self.session = session or requests.Session()
         self.session.headers.setdefault("User-Agent", "OvernightMediaAudit/0.1")
 
-    def _get(self, url: str, **kwargs) -> requests.Response | PageResponse:
+    def _get(self, url: str, **kwargs) -> Union[requests.Response, PageResponse]:
         for number in range(self.retries + 1):
             try:
                 response = self.session.get(url, timeout=self.timeout_seconds, **kwargs)
@@ -53,7 +54,7 @@ class OvernightClient:
         if response.status_code in TRANSIENT_STATUS: return PageResponse(LookupOutcome.TRANSIENT_ERROR, response.url, detail=f"HTTP {response.status_code}")
         return PageResponse(LookupOutcome.FOUND, response.url, html=response.text) if response.ok else PageResponse(LookupOutcome.PERMANENT_ERROR, response.url, detail=f"HTTP {response.status_code}")
 
-    def capture_color(self, product_url: str, color: str) -> tuple[PageResponse, ColorMedia | None]:
+    def capture_color(self, product_url: str, color: str) -> tuple[PageResponse, Optional[ColorMedia]]:
         page = self.get_page(with_color(product_url, color))
         if page.outcome is not LookupOutcome.FOUND: return page, None
         try: return page, parse_color_media(page.html or "", color)

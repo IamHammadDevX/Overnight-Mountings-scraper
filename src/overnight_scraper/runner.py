@@ -1,6 +1,7 @@
 ﻿from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 
 from .fallback import find_family_source
 from .http import OvernightClient
@@ -19,7 +20,7 @@ from .storage import (
 from .workbooks import load_families
 
 
-def capture_family(client: OvernightClient, family) -> tuple[FamilyResult | None, list[Attempt], str | None]:
+def capture_family(client: OvernightClient, family) -> tuple[Optional[FamilyResult], list[Attempt], Optional[str]]:
     attempts: list[Attempt] = []
 
     def lookup(sku: str) -> Attempt:
@@ -54,7 +55,7 @@ def capture_family(client: OvernightClient, family) -> tuple[FamilyResult | None
     return result, attempts, None
 
 
-def run_full(requirements: Path, db_path: Path, limit: int | None = None) -> int:
+def run_full(requirements: Path, db_path: Path, limit: Optional[int] = None) -> int:
     families = load_families(requirements)
     connection = connect(db_path)
     try:

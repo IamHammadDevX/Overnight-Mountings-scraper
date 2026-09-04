@@ -1,7 +1,7 @@
 ﻿from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Optional
 from openpyxl import load_workbook
 from .models import ColorMedia, Family, FamilyResult
 
@@ -11,7 +11,7 @@ COLOR_COLUMNS = {
     "rose_gold": ("Rose Gold Images Link", "Rose Gold Videos Link"),
 }
 
-def _link_map(urls: list[str]) -> str | None:
+def _link_map(urls: list[str]) -> Optional[str]:
     return str({str(index): url for index, url in enumerate(urls)}) if urls else None
 
 def _write_color(row, headers: dict[str, int], media: ColorMedia, names: tuple[str, str]) -> None:
