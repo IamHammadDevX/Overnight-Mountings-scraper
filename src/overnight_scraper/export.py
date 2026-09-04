@@ -15,11 +15,11 @@ def _link_map(urls: list[str]) -> str | None:
     return str({str(index): url for index, url in enumerate(urls)}) if urls else None
 
 def _write_color(row, headers: dict[str, int], media: ColorMedia, names: tuple[str, str]) -> None:
-    # Unknown means preserve old value. Confirmed unavailable means deliberately blank.
-    if media.available is None:
+    # Preserve existing color cells unless scraper found confident media for that color.
+    if media.available is not True or not media.evidence.get("color_specific"):
         return
-    row[headers[names[0]] - 1].value = _link_map(media.images) if media.available else None
-    row[headers[names[1]] - 1].value = _link_map(media.videos) if media.available else None
+    row[headers[names[0]] - 1].value = _link_map(media.images)
+    row[headers[names[1]] - 1].value = _link_map(media.videos)
 
 def export_master_copy(source_master: Path, output_path: Path, families: Iterable[Family], results: Iterable[FamilyResult]) -> None:
     """Create a new master workbook, changing only confirmed per-color media fields."""

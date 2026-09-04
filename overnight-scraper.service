@@ -1,0 +1,17 @@
+﻿[Unit]
+Description=Overnight Mountings scraper
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/overnight-scraper
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/overnight-scraper/.venv/bin/overnight-scraper run /opt/overnight-scraper/Overnight_Unique_SKUs_For_Scraping.xlsx --db /opt/overnight-scraper/data/scraper.db
+Restart=on-failure
+RestartSec=10
+StandardOutput=append:/opt/overnight-scraper/logs/systemd.out.log
+StandardError=append:/opt/overnight-scraper/logs/systemd.err.log
+
+[Install]
+WantedBy=multi-user.target
