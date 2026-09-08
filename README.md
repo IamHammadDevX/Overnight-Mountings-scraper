@@ -9,7 +9,8 @@ Family-based scraper for refreshing Overnight Mountings image/video URLs. Source
 - Try another SKU in same family only after confirmed `not_found`.
 - Capture White, Yellow Gold, and Rose Gold media separately from static product-page HTML.
 - Do not copy White media into Yellow/Rose fields.
-- Write production progress to SQLite first; export workbook copy separately on demand.
+- Write scrape progress to SQLite first; export Excel/CSV copies separately.
+- Publish fixed latest download files: `downloads/overnight_latest.csv` and `downloads/overnight_latest.xlsx`.
 
 ## Architecture
 
@@ -23,24 +24,26 @@ src/overnight_scraper/
   runner.py     Full resumable production runner
   storage.py    SQLite checkpointing; terminal-state resume; progress summaries
   status.py     SSH-friendly progress command with ETA
+  weekly.py     Weekly per-run DB refresh plus latest CSV/XLSX publish
   sample.py     Bounded sample runner; one JSON evidence file per family
   review.py     CSV review report for sample JSON evidence
-  export.py     New master-workbook copy from SQLite; never overwrites source input
-  cli.py        inspect, sample, run, status, review, export commands
+  export.py     New master workbook/CSV copies from SQLite; never overwrites source input
+  cli.py        inspect, sample, run, status, review, export, export-csv, weekly commands
+
+scripts/
+  weekly_run.sh  Server-side weekly wrapper used by systemd timer
+
+deploy/
+  nginx-overnight.conf  Static download endpoint template
 
 data/
-  scraper.db    Resumable SQLite state for production run
-  raw_results/  Per-family sample JSON evidence
-  *.json        Validation and convention audits
-  *.csv         Review reports
+  scraper.db     Optional one-off resumable SQLite state
+  runs/YYYY-Www/ Weekly SQLite state, one DB per week
+  raw_results/   Per-family sample JSON evidence
 
-docs/
-  color-media-decision.md  Deadline-safe color handling policy
-
-tests/
-  test_fallback.py  Not-found-only fallback tests
-  test_media.py     Strict color-media parsing tests
-  test_storage.py   SQLite resume test
+downloads/
+  overnight_latest.csv   Client download target
+  overnight_latest.xlsx  Client download target
 ```
 
 ## Color Media Rules
@@ -62,11 +65,12 @@ python -m overnight_scraper inspect "Overnight_Unique_SKUs_For_Scraping.xlsx"
 python -m overnight_scraper sample "Overnight_Unique_SKUs_For_Scraping.xlsx" --limit 10 --output data/raw_results
 python -m overnight_scraper run "Overnight_Unique_SKUs_For_Scraping.xlsx" --db data/scraper.db --limit 5
 python -m overnight_scraper status --db data/scraper.db
-python -m overnight_scraper export "Overnight_Unique_SKUs_For_Scraping.xlsx" "overnight_products_full_official_update.xlsx" --db data/scraper.db --output data/overnight_products_full_official_update_UPDATED.xlsx
-python -m overnight_scraper review --input data/raw_results --output data/sample_review.csv
+python -m overnight_scraper export "Overnight_Unique_SKUs_For_Scraping.xlsx" "overnight_products_full_official update.xlsx" --db data/scraper.db --output downloads/overnight_latest.xlsx
+python -m overnight_scraper export-csv "Overnight_Unique_SKUs_For_Scraping.xlsx" "overnight_products_full_official update.xlsx" --db data/scraper.db --output downloads/overnight_latest.csv
+python -m overnight_scraper weekly "Overnight_Unique_SKUs_For_Scraping.xlsx" "overnight_products_full_official update.xlsx"
 ```
 
-Production command has no `--limit`:
+Production one-off command has no `--limit`:
 
 ```bash
 PYTHONPATH=src python -m overnight_scraper run "Overnight_Unique_SKUs_For_Scraping.xlsx" --db data/scraper.db
@@ -77,14 +81,18 @@ PYTHONPATH=src python -m overnight_scraper run "Overnight_Unique_SKUs_For_Scrapi
 Transfer these to VPS:
 
 - `src/`
+- `scripts/`
+- `deploy/`
 - `tests/`
 - `pyproject.toml`
 - `requirements.txt`
 - `README.md`
 - `overnight-scraper.service`
+- `overnight-weekly.service`
+- `overnight-weekly.timer`
 - `Overnight_Unique_SKUs_For_Scraping.xlsx`
-- `overnight_products_full_official_update.xlsx`
-- `data/scraper.db`, only if local production progress already exists
+- `overnight_products_full_official update.xlsx`
+- existing `data/runs/` or `data/scraper.db` only if resuming existing server/local progress
 
 Example transfer command, fill in user/IP:
 
@@ -104,40 +112,83 @@ scp -r D:\overnight-scraper USER@SERVER_IP:/opt/overnight-scraper
 ssh USER@SERVER_IP
 cat /etc/os-release
 sudo apt update
-sudo apt install -y python3.11 python3.11-venv python3-pip
+sudo apt install -y python3.11 python3.11-venv python3-pip nginx
 cd /opt/overnight-scraper
 python3.11 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
 pip install -e .
+chmod +x scripts/weekly_run.sh
+mkdir -p logs downloads data/runs
 overnight-scraper inspect "Overnight_Unique_SKUs_For_Scraping.xlsx"
 overnight-scraper run "Overnight_Unique_SKUs_For_Scraping.xlsx" --db data/scraper.db --limit 2
 overnight-scraper status --db data/scraper.db
-mkdir -p logs
-sudo cp overnight-scraper.service /etc/systemd/system/overnight-scraper.service
-sudo systemctl daemon-reload
-sudo systemctl enable overnight-scraper
-sudo systemctl start overnight-scraper
-systemctl status overnight-scraper
 ```
 
-Service uses `Restart=on-failure`, not `Restart=always`. `Restart=always` would restart even after a successful full completion and cause an endless finished-job restart loop.
+## Weekly Automation
+
+Install timer and start weekly schedule:
+
+```bash
+sudo cp overnight-weekly.service /etc/systemd/system/overnight-weekly.service
+sudo cp overnight-weekly.timer /etc/systemd/system/overnight-weekly.timer
+sudo systemctl daemon-reload
+sudo systemctl enable --now overnight-weekly.timer
+systemctl list-timers overnight-weekly.timer
+```
+
+Run immediately once, without waiting for Sunday 02:00:
+
+```bash
+sudo systemctl start overnight-weekly.service
+systemctl status overnight-weekly.service
+```
+
+Weekly service writes a fresh per-week DB under `data/runs/YYYY-Www/scraper.db`, preserving older weekly runs. It publishes fixed latest files:
+
+```text
+/opt/overnight-scraper/downloads/overnight_latest.csv
+/opt/overnight-scraper/downloads/overnight_latest.xlsx
+```
+
+## Download Link
+
+Install Nginx download endpoint:
+
+```bash
+sudo cp deploy/nginx-overnight.conf /etc/nginx/sites-available/overnight
+sudo ln -s /etc/nginx/sites-available/overnight /etc/nginx/sites-enabled/overnight
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Client links:
+
+```text
+http://SERVER_IP/overnight/overnight_latest.csv
+http://SERVER_IP/overnight/overnight_latest.xlsx
+```
+
+With domain/TLS, replace `SERVER_IP` with domain.
 
 ## Monitoring
 
 ```bash
-overnight-scraper status --db /opt/overnight-scraper/data/scraper.db
-journalctl -u overnight-scraper -f
-sudo systemctl stop overnight-scraper
-sudo systemctl restart overnight-scraper
+overnight-scraper status --db /opt/overnight-scraper/data/runs/$(date +%G-W%V)/scraper.db
+journalctl -u overnight-weekly.service -f
+sudo systemctl stop overnight-weekly.service
+sudo systemctl restart overnight-weekly.service
 ```
 
-If SSH disconnects, systemd keeps running. If Python crashes, systemd restarts after 10 seconds. If VPS reboots, `WantedBy=multi-user.target` starts service again. On every start, SQLite terminal rows are skipped, so completed families are not re-scraped.
+If SSH disconnects, systemd keeps running. If Python crashes during weekly job, systemd restarts after 10 seconds. If VPS reboots, `Persistent=true` timer catches missed weekly runs. Within each weekly DB, completed terminal family rows are skipped on restart.
 
-## Export
+## Export Safety
 
-Export is separate from scraping and writes a new workbook copy only:
+Export writes new files only:
 
 ```bash
-overnight-scraper export /opt/overnight-scraper/Overnight_Unique_SKUs_For_Scraping.xlsx /opt/overnight-scraper/overnight_products_full_official_update.xlsx --db /opt/overnight-scraper/data/scraper.db --output /opt/overnight-scraper/data/overnight_products_full_official_update_UPDATED.xlsx
+overnight-scraper export /opt/overnight-scraper/Overnight_Unique_SKUs_For_Scraping.xlsx "/opt/overnight-scraper/overnight_products_full_official update.xlsx" --db /opt/overnight-scraper/data/scraper.db --output /opt/overnight-scraper/downloads/overnight_latest.xlsx
+overnight-scraper export-csv /opt/overnight-scraper/Overnight_Unique_SKUs_For_Scraping.xlsx "/opt/overnight-scraper/overnight_products_full_official update.xlsx" --db /opt/overnight-scraper/data/scraper.db --output /opt/overnight-scraper/downloads/overnight_latest.csv
 ```
+
+Original input workbooks are never saved in place.

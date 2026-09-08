@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Overnight Mountings scraper weekly
+
+[Timer]
+OnCalendar=Sun 02:00
+Persistent=true
+Unit=overnight-weekly.service
+
+[Install]
+WantedBy=timers.target

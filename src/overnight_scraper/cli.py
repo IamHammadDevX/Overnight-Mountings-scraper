@@ -1,13 +1,23 @@
 ﻿from __future__ import annotations
 import argparse
 from pathlib import Path
-from .export import export_master_copy
+from .export import export_master_copy, export_master_csv
 from .review import build_sample_review
 from .runner import run_full
 from .sample import run_sample
 from .status import print_status
 from .storage import connect, init_db, load_results
+from .weekly import run_weekly
 from .workbooks import load_families
+
+
+def _results_from_db(db_path: Path):
+    connection = connect(db_path)
+    try:
+        init_db(connection)
+        return load_results(connection)
+    finally:
+        connection.close()
 
 
 def main() -> None:
@@ -39,7 +49,20 @@ def main() -> None:
     export.add_argument("requirements", type=Path)
     export.add_argument("master", type=Path)
     export.add_argument("--db", type=Path, default=Path("data/scraper.db"))
-    export.add_argument("--output", type=Path, default=Path("data/overnight_products_full_official_update_UPDATED.xlsx"))
+    export.add_argument("--output", type=Path, default=Path("downloads/overnight_latest.xlsx"))
+
+    export_csv = commands.add_parser("export-csv", help="write updated master CSV copy from SQLite results")
+    export_csv.add_argument("requirements", type=Path)
+    export_csv.add_argument("master", type=Path)
+    export_csv.add_argument("--db", type=Path, default=Path("data/scraper.db"))
+    export_csv.add_argument("--output", type=Path, default=Path("downloads/overnight_latest.csv"))
+
+    weekly = commands.add_parser("weekly", help="run weekly refresh and publish latest CSV/XLSX files")
+    weekly.add_argument("requirements", type=Path)
+    weekly.add_argument("master", type=Path)
+    weekly.add_argument("--runs-dir", type=Path, default=Path("data/runs"))
+    weekly.add_argument("--downloads-dir", type=Path, default=Path("downloads"))
+    weekly.add_argument("--run-id", default=None, help="optional fixed run id for testing/backfill")
 
     args = parser.parse_args()
     if args.command == "inspect":
@@ -55,14 +78,16 @@ def main() -> None:
         print_status(args.db)
     elif args.command == "export":
         families = load_families(args.requirements)
-        connection = connect(args.db)
-        try:
-            init_db(connection)
-            results = load_results(connection)
-        finally:
-            connection.close()
-        export_master_copy(args.master, args.output, families, results)
+        export_master_copy(args.master, args.output, families, _results_from_db(args.db))
         print(f"Exported: {args.output}")
+    elif args.command == "export-csv":
+        families = load_families(args.requirements)
+        export_master_csv(args.master, args.output, families, _results_from_db(args.db))
+        print(f"Exported: {args.output}")
+    elif args.command == "weekly":
+        db_path = run_weekly(args.requirements, args.master, args.runs_dir, args.downloads_dir, args.run_id)
+        print(f"Weekly run DB: {db_path}")
+        print(f"Downloads: {args.downloads_dir / 'overnight_latest.csv'}, {args.downloads_dir / 'overnight_latest.xlsx'}")
     else:
         build_sample_review(args.input, args.output)
         print(f"Review report: {args.output}")

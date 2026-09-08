@@ -1,4 +1,4 @@
-﻿[Unit]
+[Unit]
 Description=Overnight Mountings scraper
 After=network-online.target
 Wants=network-online.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=Weekly Overnight Mountings scraper refresh
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/overnight-scraper
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/overnight-scraper/scripts/weekly_run.sh
+Restart=on-failure
+RestartSec=10
+StandardOutput=append:/opt/overnight-scraper/logs/weekly.out.log
+StandardError=append:/opt/overnight-scraper/logs/weekly.err.log
