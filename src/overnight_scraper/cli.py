@@ -1,7 +1,10 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 import argparse
+import json
 from pathlib import Path
 from .export import export_master_copy, export_master_csv
+from .fullsite import run_fullsite
+from .fullsite_production import run as run_fullsite_production, report as fullsite_report, export as fullsite_export
 from .review import build_sample_review
 from .runner import run_full
 from .sample import run_sample
@@ -57,6 +60,20 @@ def main() -> None:
     export_csv.add_argument("--db", type=Path, default=Path("data/scraper.db"))
     export_csv.add_argument("--output", type=Path, default=Path("downloads/overnight_latest.csv"))
 
+    fullsite = commands.add_parser("fullsite", help="authenticated, separate full-site scrape")
+    fullsite.add_argument("--output", type=Path, default=Path("downloads/fullsite/overnight_fullsite_latest.xlsx"))
+    fullsite.add_argument("--username-env", default="OVERNIGHT_USERNAME")
+    fullsite.add_argument("--password-env", default="OVERNIGHT_PASSWORD")
+    fullsite.add_argument("--limit-pages", type=int, default=None, help="smoke-test page cap")
+    fullsite.add_argument("--limit-products", type=int, default=None, help="smoke-test product cap")
+
+    fullrun = commands.add_parser("fullsite-run", help="resumable full-site configuration scrape")
+    fullrun.add_argument("--db", type=Path, default=Path("data/fullsite.db")); fullrun.add_argument("--profile", type=Path, default=Path("data/fullsite_browser_profile")); fullrun.add_argument("--output", type=Path, default=Path("downloads/fullsite/overnight_fullsite_latest.xlsx")); fullrun.add_argument("--username-env", default="OVERNIGHT_USERNAME"); fullrun.add_argument("--password-env", default="OVERNIGHT_PASSWORD"); fullrun.add_argument("--limit",type=int,default=None)
+    fullstatus = commands.add_parser("fullsite-status", help="show full-site scrape progress")
+    fullstatus.add_argument("--db",type=Path,default=Path("data/fullsite.db"))
+    fullexport = commands.add_parser("fullsite-export", help="write standalone full-site workbook from SQLite")
+    fullexport.add_argument("--db",type=Path,default=Path("data/fullsite.db")); fullexport.add_argument("--output",type=Path,default=Path("downloads/fullsite/overnight_fullsite_latest.xlsx"))
+
     weekly = commands.add_parser("weekly", help="run weekly refresh and publish latest CSV/XLSX files")
     weekly.add_argument("requirements", type=Path)
     weekly.add_argument("master", type=Path)
@@ -84,6 +101,16 @@ def main() -> None:
         families = load_families(args.requirements)
         export_master_csv(args.master, args.output, families, _results_from_db(args.db))
         print(f"Exported: {args.output}")
+    elif args.command == "fullsite":
+        catalogued, exported = run_fullsite(args.output, args.username_env, args.password_env, args.limit_pages, args.limit_products)
+        print(f"Full-site catalogue products: {catalogued}; exported: {exported}")
+        print(f"Workbook: {args.output}")
+    elif args.command == "fullsite-run":
+        print(f"Processed {run_fullsite_production(args.db,args.profile,args.username_env,args.password_env,args.output,args.limit)} products")
+    elif args.command == "fullsite-status":
+        print(json.dumps(fullsite_report(args.db),indent=2))
+    elif args.command == "fullsite-export":
+        fullsite_export(args.db,args.output); print(f"Exported: {args.output}")
     elif args.command == "weekly":
         db_path = run_weekly(args.requirements, args.master, args.runs_dir, args.downloads_dir, args.run_id)
         print(f"Weekly run DB: {db_path}")
@@ -95,3 +122,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+

@@ -1,0 +1,17 @@
+[Unit]
+Description=Overnight full-site scraper
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/overnight-scraper
+EnvironmentFile=/etc/overnight-fullsite.env
+ExecStart=/opt/overnight-scraper/.venv/bin/overnight-scraper fullsite-run --db data/fullsite.db --profile data/fullsite_browser_profile --output downloads/fullsite/overnight_fullsite_latest.xlsx
+Restart=on-failure
+RestartSec=30
+StandardOutput=append:/opt/overnight-scraper/logs/fullsite.out.log
+StandardError=append:/opt/overnight-scraper/logs/fullsite.err.log
+
+[Install]
+WantedBy=multi-user.target

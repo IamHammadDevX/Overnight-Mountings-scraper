@@ -28,3 +28,16 @@ __pycache__/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Local Playwright browser profile and authenticated sample evidence
+/data/fullsite_browser_profile/
+/data/fullsite_authenticated_sample.json
+
+/data/fullsite_authenticated_capture.json
+
+/data/fullsite_configuration_sample.xlsx
+/data/fullsite_configuration_sample.json
+
+# Generated full-site browser evidence and editable-install metadata
+/data/fullsite_*.json
+*.egg-info/

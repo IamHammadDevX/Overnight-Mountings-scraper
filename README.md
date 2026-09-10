@@ -192,3 +192,26 @@ overnight-scraper export-csv /opt/overnight-scraper/Overnight_Unique_SKUs_For_Sc
 ```
 
 Original input workbooks are never saved in place.
+
+## Separate Full-Site Scrape (Paid Extension)
+
+`fullsite` is isolated from the 7,223-family weekly pipeline. It creates a new
+workbook only; it never reads, updates, or merges the existing client workbook.
+Credentials are supplied at runtime through environment variables and are never
+saved in the repository, command history, SQLite database, or Excel output.
+
+```bash
+export OVERNIGHT_USERNAME='client-provided-username'
+export OVERNIGHT_PASSWORD='client-provided-password'
+overnight-scraper fullsite --limit-pages 2 --limit-products 5
+# Remove both limits only after the authenticated sample is approved.
+```
+
+The site currently presents CAPTCHA on its login page. If the account login
+requires it, complete it only through a client-approved browser session; the
+scraper does not bypass CAPTCHA. The full-site file is written separately to:
+
+```text
+downloads/fullsite/overnight_fullsite_latest.xlsx
+```
+
